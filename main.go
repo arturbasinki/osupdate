@@ -9,6 +9,7 @@ import (
 func main() {
 	// Checking Linux distro
 	distro := checkLinuxDistro()
+	fmt.Printf("Detected Linux Distribution: %s\n", distro)
 	if distro != "debian" && distro != "ubuntu" {
 		fmt.Fprintf(os.Stderr, "This script is designed for Debian or Ubuntu-based systems. Detected: %s\n", distro)
 		os.Exit(1)
