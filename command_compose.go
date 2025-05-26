@@ -11,7 +11,7 @@ func composeCommand(distro string) []*exec.Cmd {
 		commands = append(commands, exec.Command("sudo", "apt", "dist-upgrade", "-y"))
 
 	case "arch", "manjaro":
-		commands = append(commands, exec.Command("pacman", "-Syu"))
+		commands = append(commands, exec.Command("sudo", "pacman", "-Syu"))
 	case "opensuse":
 		commands = append(commands, exec.Command("sudo", "zypper", "refresh"))
 	case "fedora":
