@@ -7,39 +7,43 @@ import (
 )
 
 func main() {
+	// Checking Linux distro
+	distro := checkLinuxDistro()
+	if distro != "debian" && distro != "ubuntu" {
+		fmt.Fprintf(os.Stderr, "This script is designed for Debian or Ubuntu-based systems. Detected: %s\n", distro)
+		os.Exit(1)
+	}
 	fmt.Println("Starting os update...")
 	fmt.Println("Running command: sudo apt update && sudo apt dist-upgrade -y")
 	fmt.Println("You may be required to provide an administrator password (sudo).")
 	fmt.Println("----------------------------------------------------------------")
 
-	// Prepare the command `sudo apt update && sudo apt dist-upgrade -y`
-	// We use "-y" to automatically confirm all apt questions.
-	cmd := exec.Command("sudo", "apt", "update", "&&", "sudo", "apt", "dist-upgrade", "-y")
+	// Run "sudo apt update"
+	updateCmd := exec.Command("sudo", "apt", "update")
+	updateCmd.Stdout = os.Stdout
+	updateCmd.Stderr = os.Stderr
+	updateCmd.Stdin = os.Stdin
 
-	// Connect Go's standard output, error, and input
-	// to the appropriate streams of the command being run.
-	// This allows you to display apt results directly in the terminal
-	// and allows you to enter your sudo password if required.
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	cmd.Stdin = os.Stdin
+	err := updateCmd.Run()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error during 'apt update': %v\n", err)
+		os.Exit(1)
+	}
 
-	// Run the command
-	err := cmd.Run()
+	// Run "sudo apt dist-upgrade -y"
+	upgradeCmd := exec.Command("sudo", "apt", "dist-upgrade", "-y")
+	upgradeCmd.Stdout = os.Stdout
+	upgradeCmd.Stderr = os.Stderr
+	upgradeCmd.Stdin = os.Stdin
 
+	err = upgradeCmd.Run()
 	fmt.Println("---------------------------------------------------------------")
 
-	// Check if there was an error while running the command
-
 	if err != nil {
-		// If cmd.Run() returns an error, it means there was a problem starting
-		// the process (e.g., missing `sudo` or `apt`) or the process exited
-		// with a non-zero error code.
-		fmt.Fprintf(os.Stderr, "Error during update: %v\n", err)
-		// Exit the program with an error code
+		fmt.Fprintf(os.Stderr, "Error during 'apt dist-upgrade': %v\n", err)
 		os.Exit(1)
 	}
 
 	// If there were no errors
-	fmt.Println("System update completed successfully.")
+	fmt.Println("System update and upgrade completed successfully.")
 }
