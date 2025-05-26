@@ -6,11 +6,13 @@ import (
 )
 
 // This a function that cheks what a linux distribution is running
-func checkLinuxDistro() string {
+// and returns strig wit appropriate command to update and upgrade given distro
+func checkLinuxDistro() (string, error) {
 	// Read the /etc/os-release file to determine the Linux distribution
+	distro := "Unknown Linux Distribution"
 	data, err := os.ReadFile("/etc/os-release")
 	if err != nil {
-		return "Unknown Linux Distribution"
+		return distro, err
 	}
 
 	// Convert the data to a string and split it into lines
@@ -20,9 +22,10 @@ func checkLinuxDistro() string {
 	for line := range lines {
 		if strings.HasPrefix(line, "ID=") {
 			// Extract the ID value and return it
-			return strings.Trim(strings.TrimPrefix(line, "ID="), "\"")
+			distro = strings.Trim(strings.TrimPrefix(line, "ID="), "\"")
+			return distro, nil
 		}
 	}
 
-	return "Unknown Linux Distribution"
+	return distro, nil
 }
