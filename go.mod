@@ -1,3 +1,3 @@
-module github.com/arturbasinki/sys-update
+module github.com/arturbasinki/osupdate
 
 go 1.24.3
